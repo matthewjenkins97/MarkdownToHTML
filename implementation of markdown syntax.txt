@@ -1,0 +1,85 @@
+Order of Precedence:
+
+headings:
+  6 hashtags unmatched
+  5 hashtags unmatched
+  4 hashtags unmatched
+  3 hashtags unmatched
+  2 hashtags unmatched
+  1 hashtags unmatched
+
+bold (2 stars matched)
+italics (1 star matched)
+unordered lists (1 star unmatched)
+
+quoted text
+links
+strikethrough
+superscript
+
+escape sequences
+
+_______________________________________________________________________________
+
+italics
+\*.*\*
+
+bold
+\*{2}.*\*{2}
+
+text for link
+\[.*\]\(.*\)
+
+unordered lists
+\*.*
+
+quoted text
+>.*
+
+strikethrough
+~~.*~~
+
+headings
+#
+#{1}.*
+
+##
+#{2}.*
+
+###
+#{3}.*
+
+####
+#{4}.*
+
+#####
+#{5}.*
+
+######
+#{6}.*
+
+escape sequences
+
+*
+\*
+
+>
+\>
+
+#
+\#
+
+~
+\~
+
+^
+\^
+
+{}
+\{.*\}
+
+[]
+\[.*\]
+
+()
+\(.*\)
