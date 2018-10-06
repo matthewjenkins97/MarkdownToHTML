@@ -11,30 +11,14 @@
 
 ~~strikethrough~~
 
-## blockquotes
+> Blockquotes
 
-> Blockquotes can also be nested...
+^superscript
 
->> ...by using additional greater-than signs right next to each other...
-
-> > > ...or with spaces between arrows.
-
-## Lists
-
-Unordered
-
-* Create a list by starting a line with \*
-* Sub-lists are made by indenting 2 spaces:
-  * Bread
-  * Eggs
-  * Carrots
-* Very easy!
-
-## Links
+* Unordered lists
 
 [link text](http://dev.nodeca.com)
 
-# Escapes
 \*
 \>
 \#
