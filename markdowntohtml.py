@@ -14,6 +14,140 @@ end = """
 """
 
 
+def conversion(line, html_file):
+    """building an html line from bottom up using recursion"""
+
+    # print(line)
+
+    # escape sequences
+    # these will be simple find and replaces
+    # asterisk *
+    match = re.search("(.*)\\\\\*(.*)", line)
+    if match:
+        return match.group(1) + "*" + match.group(2)
+
+    # greater than >
+    match = re.search("(.*)\\\\>(.*)", line)
+    if match:
+        return match.group(1) + ">" + match.group(2)
+
+    # hashtag #
+    match = re.search("(.*)\\\\#(.*)", line)
+    if match:
+        return match.group(1) + "#" + match.group(2)
+
+    # tilde ~
+    match = re.search("(.*)\\\\~(.*)", line)
+    if match:
+        return match.group(1) + "~" + match.group(2)
+
+    # parens ()
+    match = re.search("(.*)\\\\\((.*)", line)
+    if match:
+        return match.group(1) + "(" + match.group(2)
+    match = re.search("(.*)\\\\\)(.*)", line)
+    if match:
+        return match.group(1) + ")" + match.group(2)
+
+    # parens {}
+    match = re.search("(.*)\\\\\{(.*)", line)
+    if match:
+        return match.group(1) + "{" + match.group(2)
+    match = re.search("(.*)\\\\\}(.*)", line)
+    if match:
+        return match.group(1) + "}" + match.group(2)
+
+    # parens []
+    match = re.search("(.*)\\\\\[(.*)", line)
+    if match:
+        return match.group(1) + "[" + match.group(2)
+    match = re.search("(.*)\\\\\](.*)", line)
+    if match:
+        return match.group(1) + "]" + match.group(2)
+
+    # caret ^
+    match = re.search("(.*)\\\\\^(.*)", line)
+    if match:
+        return match.group(1) + "^" + match.group(2)
+
+    # backslashes \
+    # this has to be some sort of joke...
+    match = re.search("(.*)\\\\{2}(.*)", line)
+    if match:
+        return match.group(1) + "\\" + match.group(2)
+
+    # headings
+    match = re.match("(#{1,6})(.*)", line)
+    if match:
+        # once you see a heading, we replace the front of the text with the
+        # proper tag, put the text after the heading into a string, and
+        # then end it with the proper tag
+        # print("Heading found")
+        return "<h" + str(len(match.group(1))) + ">" + \
+               conversion(match.group(2), html_file) + "</h" + \
+               str(len(match.group(1))) + ">"
+
+    # bold, italics, unordered lists
+    # these are all being checked en masse because of the common symbol *
+
+    # bold
+    match = re.search("(.*)\*{2}(.*)\*{2}(.*)", line)
+    if match:
+        # print("Bold found")
+        return conversion(match.group(1), html_file) + "<b>" + \
+            conversion(match.group(2), html_file) + "</b>" + \
+            conversion(match.group(3), html_file)
+
+    # italics
+    match = re.search("(.*)\*(.*)\*(.*)", line)
+    if match:
+        # print("Italics found")
+        return conversion(match.group(1), html_file) + "<em>" + \
+            conversion(match.group(2), html_file) + "</em>" + \
+            conversion(match.group(3), html_file)
+
+    # unordered lists
+    match = re.search("^\* (.*)", line)
+    if match:
+        # print("Unordered list found")
+        # print("Match: " + str(match.group(1)))
+        return "<ul><li>" + conversion(match.group(1), html_file) + \
+               "</li></ul>"
+
+    # miscellany
+    # quoted text
+    match = re.search("^> (.*)", line)
+    if match:
+        # print("Blockquote found")
+        return "<blockquote>" + \
+               conversion(match.group(1), html_file) + "</blockquote>"
+
+    # links
+    match = re.search("(.*)\[(.*)\]\((.*)\)(.*)", line)
+    if match:
+        # print("Links found")
+        return conversion(match.group(1), html_file) + "<a href=" + \
+            conversion(match.group(3), html_file) + ">" + \
+            conversion(match.group(2), html_file) + "</a>" + \
+            conversion(match.group(4), html_file)
+
+    # strikethrough text
+    match = re.search("~~(.*)~~", line)
+    if match:
+        # print("Strikethrough found")
+        return "<s>" + conversion(match.group(1), html_file) + "</s>"
+
+    # superscript
+    match = re.search("^\^(.*)", line)
+    if match:
+        # print("Superscript found")
+        return"<sup>" + conversion(match.group(1), html_file) + "</sup>"
+
+    # if the line doesn't contain any match we just print it as is
+    # print("Nothing found")
+    return line
+
+
 def markdownpass(file, filename):
     """goes through each line and check each line for appropriate markdown
     elements using regex """
@@ -23,160 +157,17 @@ def markdownpass(file, filename):
     html_file = open(filename[:-3] + ".html", "w")
     html_file.write(boilerplate)
 
+    # goes through every line in the file
     for line in file:
-
-        # setting specific flags
-        bolded = False
-        italicized = False
-        no_match = True
-
-        # headings
-        match = re.match("(#{1,6})(.*)", line)
-        if match:
-            # once you see a heading, we replace the front of the text with the
-            # proper tag, put the text after the heading into a string, and
-            # then end it with the proper tag
-            temp_line = "<h" + str(len(match.group(1))) + ">" + \
-                        str(match.group(2)) + "</h" + \
-                        str(len(match.group(1))) + ">"
-            html_file.write(temp_line)
-            no_match = False
-
-        # bold, italics, unordered lists
-        # these are all being checked en masse because of the common symbol *
-
-        # bold
-        match = re.search("\*{2}(.*)\*{2}", line)
-        if match:
-            temp_line = "<b>" + str(match.group(1)) + "</b>"
-            html_file.write(temp_line)
-            bolded = True
-            no_match = False
-
-        # italics
-        match = re.search("\*(.*)[^\\\\]\*", line)
-        if match and not bolded:
-            temp_line = "<em>" + str(match.group(1)) + "</em>"
-            html_file.write(temp_line)
-            italicized = True
-            no_match = False
-
-        # unordered lists
-        match = re.search("^\*(.*)", line)
-        if match and not bolded and not italicized:
-            temp_line = "<ul><li>" + str(match.group(1)) + "</li></ul>"
-            html_file.write(temp_line)
-            no_match = False
-
-        # miscellany
-        # quoted text
-        match = re.search("^>(.*)", line)
-        if match:
-            temp_line = "<blockquote>" + str(match.group(1)) + "</blockquote>"
-            html_file.write(temp_line)
-            no_match = False
-
-        # links
-        match = re.search("\[(.*)\]\((.*)\)", line)
-        if match:
-            temp_line = "<a href=" + str(match.group(2)) + ">" + \
-                        str(match.group(1)) + "</a>"
-            html_file.write(temp_line)
-            no_match = False
-
-        # strikethrough text
-        match = re.search("~~(.*)~~", line)
-        if match:
-            temp_line = "<s>" + str(match.group(1)) + "</s>"
-            html_file.write(temp_line)
-            no_match = False
-
-        # superscript
-        match = re.search("^\^(.*)", line)
-        if match:
-            temp_line = "<sup>" + str(match.group(1)) + "</sup>"
-            html_file.write(temp_line)
-            no_match = False
-
-        # escape sequences
-        # these will be simple find and replaces
-        # asterisk *
-        match = re.search("\\\\\*", line)
-        if match:
-            html_file.write("*")
-            no_match = False
-
-        # greater than >
-        match = re.search("\\\\>", line)
-        if match:
-            html_file.write(">")
-            no_match = False
-
-        # hashtag #
-        match = re.search("\\\\#", line)
-        if match:
-            html_file.write("#")
-            no_match = False
-
-        # tilde ~
-        match = re.search("\\\\~", line)
-        if match:
-            html_file.write("~")
-            no_match = False
-
-        # parens ()
-        match = re.search("\\\\\(", line)
-        if match:
-            html_file.write("(")
-            no_match = False
-        match = re.search("\\\\\)", line)
-        if match:
-            html_file.write(")")
-            no_match = False
-
-        # parens {}
-        match = re.search("\\\\\{", line)
-        if match:
-            html_file.write("{")
-            no_match = False
-        match = re.search("\\\\\}", line)
-        if match:
-            html_file.write("}")
-            no_match = False
-
-        # parens []
-        match = re.search("\\\\\[", line)
-        if match:
-            html_file.write("[")
-            no_match = False
-        match = re.search("\\\\\]", line)
-        if match:
-            html_file.write("]")
-            no_match = False
-
-        # caret ^
-        match = re.search("\\\\\^", line)
-        if match:
-            html_file.write("^")
-            no_match = False
-
-        # backslashes \
-        # this has to be some sort of joke...
-        match = re.search("\\\\{2}", line)
-        if match:
-            html_file.write("\\")
-            no_match = False
-
-        # if line is empty place a linebreak
+        # if line is empty, place a linebreak and continue
         if line == "":
             html_file.write("<br>")
-
-        # if the line doesn't contain any match we just print it as is
-        if no_match:
-            html_file.write(line)
-
+        else:
+            # otherwise, run a conversion algorithm on the line
+            html_file.write(conversion(line, html_file))
         # wrap up this line with a \n (mostly for neatness in the html file)
         html_file.write("\n")
+        print()
 
     html_file.write(end)
 
