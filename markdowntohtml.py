@@ -90,6 +90,14 @@ def conversion(line, html_file):
     # bold, italics, unordered lists
     # these are all being checked en masse because of the common symbol *
 
+    # unordered lists
+    match = re.search("^\* (.*)", line)
+    if match:
+        # print("Unordered list found")
+        # print("Match: " + str(match.group(1)))
+        return "<ul><li>" + conversion(match.group(1), html_file) + \
+               "</li></ul>"
+
     # bold
     match = re.search("(.*)\*{2}(.*)\*{2}(.*)", line)
     if match:
@@ -105,14 +113,6 @@ def conversion(line, html_file):
         return conversion(match.group(1), html_file) + "<em>" + \
             conversion(match.group(2), html_file) + "</em>" + \
             conversion(match.group(3), html_file)
-
-    # unordered lists
-    match = re.search("^\* (.*)", line)
-    if match:
-        # print("Unordered list found")
-        # print("Match: " + str(match.group(1)))
-        return "<ul><li>" + conversion(match.group(1), html_file) + \
-               "</li></ul>"
 
     # miscellany
     # quoted text
@@ -167,7 +167,7 @@ def markdownpass(file, filename):
             html_file.write(conversion(line, html_file))
         # wrap up this line with a \n (mostly for neatness in the html file)
         html_file.write("\n")
-        print()
+        # print()
 
     html_file.write(end)
 
