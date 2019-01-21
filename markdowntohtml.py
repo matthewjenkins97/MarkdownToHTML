@@ -1,14 +1,16 @@
+"""using recursion, this program takes a markdown file and converts it to html"""
+
 #!/usr/local/bin/python3
 
 import sys
 import re
 
-boilerplate = """<!DOCTYPE html>
+BOILERPLATE = """<!DOCTYPE html>
 <html>
 <body>
 """
 
-end = """
+END = """
 </body>
 </html>
 """
@@ -155,7 +157,7 @@ def markdownpass(file, filename):
     # converting filename to an html file and dumping a boilerplate into it
 
     html_file = open(filename[:-3] + ".html", "w")
-    html_file.write(boilerplate)
+    html_file.write(BOILERPLATE)
 
     # goes through every line in the file
     for line in file:
@@ -169,7 +171,7 @@ def markdownpass(file, filename):
         html_file.write("\n")
         # print()
 
-    html_file.write(end)
+    html_file.write(END)
 
 
 def main():
