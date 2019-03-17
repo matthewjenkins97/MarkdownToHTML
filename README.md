@@ -1,43 +1,45 @@
 # MarkdownToHTML
-A simple Markdown to HTML converter written in python.
 
+A simple Markdown to HTML converter written in Python 3. This was done as a pet project. I'm curious about the compilation process, although I am unable to take any material in the field at my college, so I decided to do this by myself to see if I could implement this without help. I succeeded.
 
-## Why would you do this to yourself?
-At some point I need to learn how the compilation process works. In order to do that, I need to learn how to properly compile more simple things like Markdown into another format. This project is an experiment in which I figure out how to do that.
+## Usage
 
+    markdowntohtml.py file.md
 
-## Syntax Used
+In order for this to work, "file.md" must be a markdown file, and must exist on the drive. The program also assumes that Python3 is on your computer.
 
-#### Italics
+## Preferred Syntax for markdowntohtml.py
+
+### Italics
+
 \*italics\*
 
+### Bold
 
-#### Bold
 \*\*bold\*\*
 
+### Text
 
-#### Text
 \[text for link\]\(link\)
 
+### Unordered Lists
 
-#### Unordered Lists
 \* unordered lists
 
+### Quoted text
 
-#### Quoted text
 \> quoted text
-(TODO: nesting in lists and quoted text?)
 
+### Strikethrough text
 
-#### Strikethrough text
 \~\~strikethrough\~\~
 
+### Line Break
 
-#### Line Break
 The enter key will act as a line break.
 
+### Headers
 
-#### Headers
 \# - Header 1
 
 \#\# - Header 2
@@ -50,9 +52,9 @@ The enter key will act as a line break.
 
 \#\#\#\#\#\# - Header 6
 
+### Backslash escape characters
 
-#### Backslask escape characters
-characters supported by backslash escapes:
+Characters supported by backslash escapes:
 
 \\
 
@@ -79,3 +81,8 @@ characters supported by backslash escapes:
 \!
 
 \~
+
+### Possible Improvements for later versions
+
+* Nesting in lists and quoted text
+  
